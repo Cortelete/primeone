@@ -79,12 +79,6 @@ const App: React.FC = () => {
     <div className="bg-gradient-to-br from-slate-900 via-black to-[#243447] animate-gradient min-h-screen w-full flex flex-col items-center justify-between p-2 sm:p-6 text-white overflow-x-hidden">
       <main className="w-full max-w-lg mx-auto flex flex-col items-center flex-grow justify-center">
         <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl shadow-2xl p-4 sm:p-8 w-full border border-slate-700/50 relative overflow-hidden">
-          {/* Background Logo */}
-          <img
-            src="/logo.png"
-            aria-hidden="true"
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 h-4/5 object-contain opacity-[0.03] pointer-events-none"
-          />
           <div className="relative z-10">
             {/* Profile Section */}
             <div className="flex flex-col items-center text-center mb-4 sm:mb-6">
