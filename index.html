@@ -33,6 +33,13 @@
         0% { transform: rotateY(0deg); }
         100% { transform: rotateY(1800deg); }
       }
+      .animate-spin-single {
+        animation: spin-single 2s ease-in-out forwards;
+      }
+      @keyframes spin-single {
+        0% { transform: rotateY(0deg); }
+        100% { transform: rotateY(180deg); }
+      }
       .animate-scroll {
         animation: scroll 40s linear infinite;
       }

@@ -9,6 +9,7 @@ import LocationModalContent from './components/modals/LocationModalContent';
 import RatingModalContent from './components/modals/RatingModalContent';
 import FeedbackModalContent from './components/modals/FeedbackModalContent';
 import CtaModalContent from './components/modals/CtaModalContent';
+import ClientsModalContent from './components/modals/ClientsModalContent';
 import { InstagramIcon, FacebookIcon, MailIcon, MapPinIcon, StarIcon, SparklesIcon } from './components/icons';
 
 const clientLogos = [
@@ -24,7 +25,7 @@ const LOGOS = ['/coin.png', '/logo.png'];
 const App: React.FC = () => {
   const [openModal, setOpenModal] = useState<ModalType | null>(null);
   const [verseIndex, setVerseIndex] = useState(0);
-  const [isSpinning, setIsSpinning] = useState(false);
+  const [animationState, setAnimationState] = useState<'none' | 'single' | 'fast'>('none');
   const [currentLogoIndex, setCurrentLogoIndex] = useState(0);
 
   useEffect(() => {
@@ -34,19 +35,32 @@ const App: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const triggerFlip = useCallback((type: 'single' | 'fast') => {
+    setAnimationState(currentState => {
+        if (currentState !== 'none') {
+            return currentState; // Animation in progress, do nothing
+        }
+
+        // Start the animation
+        setTimeout(() => {
+            setAnimationState('none');
+            setCurrentLogoIndex(prevIndex => (prevIndex + 1) % LOGOS.length);
+        }, 2000); // This duration must match the CSS animation duration
+
+        return type; // Set the new animation state
+    });
+  }, []);
+
+  // Automatically trigger the flip every 5 seconds
   useEffect(() => {
-    const logoInterval = setInterval(() => {
-      if (!isSpinning) {
-        setCurrentLogoIndex((prevIndex) => (prevIndex + 1) % LOGOS.length);
-      }
-    }, 5000);
-    return () => clearInterval(logoInterval);
-  }, [isSpinning]);
+      const logoInterval = setInterval(() => {
+          triggerFlip('single');
+      }, 5000);
+      return () => clearInterval(logoInterval);
+  }, [triggerFlip]);
   
   const handleLogoClick = () => {
-    if (isSpinning) return;
-    setIsSpinning(true);
-    setTimeout(() => setIsSpinning(false), 2000);
+    triggerFlip('fast');
   };
 
   const openRatingFeedbackModal = useCallback(() => {
@@ -70,6 +84,8 @@ const App: React.FC = () => {
         return <RatingModalContent onLowRating={openRatingFeedbackModal} closeModal={closeModal} />;
       case ModalType.FEEDBACK:
         return <FeedbackModalContent closeModal={closeModal}/>;
+      case ModalType.CLIENTS:
+        return <ClientsModalContent />;
       default:
         return null;
     }
@@ -86,9 +102,17 @@ const App: React.FC = () => {
                 className="w-24 h-24 md:w-32 md:h-32 mb-2 sm:mb-4 cursor-pointer"
                 style={{ perspective: '1000px' }}
                 onClick={handleLogoClick}
+                aria-label="Flip coin logo"
+                role="button"
               >
                 <div
-                  className={`relative w-full h-full transition-transform duration-500 ${isSpinning ? 'animate-spin-fast' : 'hover:scale-105'}`}
+                  className={`relative w-full h-full transition-transform duration-500 ${
+                    animationState === 'fast'
+                      ? 'animate-spin-fast'
+                      : animationState === 'single'
+                      ? 'animate-spin-single'
+                      : 'hover:scale-105'
+                  }`}
                   style={{ transformStyle: 'preserve-3d' }}
                 >
                   <img
@@ -132,8 +156,15 @@ const App: React.FC = () => {
             </div>
 
             {/* Client Logos Section */}
-            <div className="mt-4 sm:mt-6 w-full border-t border-white/10 pt-3 sm:pt-4">
-              <p className="text-center text-xs sm:text-sm text-gray-400 mb-2 sm:mb-4">Trusted by leading dealerships</p>
+            <div 
+              className="mt-4 sm:mt-6 w-full border-t border-white/10 pt-3 sm:pt-4 cursor-pointer group"
+              onClick={() => setOpenModal(ModalType.CLIENTS)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter') setOpenModal(ModalType.CLIENTS); }}
+              aria-label="View trusted dealerships"
+            >
+              <p className="text-center text-xs sm:text-sm text-gray-400 mb-2 sm:mb-4 group-hover:text-white transition-colors duration-300">Trusted by leading dealerships</p>
               <div 
                 className="relative w-full h-10 sm:h-12 overflow-hidden"
                 style={{ maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)' }}

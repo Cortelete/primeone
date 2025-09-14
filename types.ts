@@ -3,5 +3,6 @@ export enum ModalType {
   EMAIL = 'email',
   LOCATION = 'location',
   RATING = 'rating',
-  FEEDBACK = 'feedback'
+  FEEDBACK = 'feedback',
+  CLIENTS = 'clients'
 }
